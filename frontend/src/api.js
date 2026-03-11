@@ -14,3 +14,13 @@ export const addTask = async (title) => {
         console.error("Error adding task:", error);
     }
 };
+
+export const getTasks = async () => {
+    try {
+        const response = await fetch(`${API_URL}/tasks`); // Note the 's' in /tasks
+        return await response.json();
+    } catch (error) {
+        console.error("Error fetching tasks:", error);
+        return [];
+    }
+};
