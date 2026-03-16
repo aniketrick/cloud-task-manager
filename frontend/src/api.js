@@ -1,4 +1,4 @@
-const API_URL = "https://your-api-id.execute-api.eu-west-2.amazonaws.com"; // PASTE YOUR INVOKE URL HERE
+const API_URL = "https://lmr5zv0tn6.execute-api.eu-west-2.amazonaws.com/tasks";
 
 export const addTask = async (title) => {
     try {

@@ -107,3 +107,50 @@ output "dynamodb_table_name" {
 output "lambda_function_arn" {
   value = aws_lambda_function.get_tasks.arn
 }
+
+# 1. Create the HTTP API Gateway
+resource "aws_apigatewayv2_api" "http_api" {
+  name          = "task-manager-api"
+  protocol_type = "HTTP"
+  
+  cors_configuration {
+    allow_origins = ["*"] # Allows your React app to talk to the API
+    allow_methods = ["GET", "POST", "OPTIONS"]
+    allow_headers = ["content-type"]
+  }
+}
+
+# 2. Create a Stage (The "Environment")
+resource "aws_apigatewayv2_stage" "default" {
+  api_id      = aws_apigatewayv2_api.http_api.id
+  name        = "$default"
+  auto_deploy = true
+}
+
+# 3. Create the Integration (Connects API to Lambda)
+resource "aws_apigatewayv2_integration" "lambda_integration" {
+  api_id           = aws_apigatewayv2_api.http_api.id
+  integration_type = "AWS_PROXY"
+  integration_uri  = aws_lambda_function.get_tasks.invoke_arn
+}
+
+# 4. Create the Route (The "Path")
+resource "aws_apigatewayv2_route" "get_tasks_route" {
+  api_id    = aws_apigatewayv2_api.http_api.id
+  route_key = "GET /tasks"
+  target    = "integrations/${aws_apigatewayv2_integration.lambda_integration.id}"
+}
+
+# 5. Permission for API Gateway to call Lambda
+resource "aws_lambda_permission" "api_gw" {
+  statement_id  = "AllowExecutionFromAPIGateway"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.get_tasks.function_name
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${aws_apigatewayv2_api.http_api.execution_arn}/*/*"
+}
+
+# --- NEW OUTPUT: Your API URL ---
+output "api_url" {
+  value = "${aws_apigatewayv2_api.http_api.api_endpoint}/tasks"
+}
