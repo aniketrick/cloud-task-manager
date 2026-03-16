@@ -4,3 +4,5 @@ dist/
 .terraform/
 *.tfstate
 terraform.tfvars
+*.tfstate.backup
+.terraform.lock.hcl
