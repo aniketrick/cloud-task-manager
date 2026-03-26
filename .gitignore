@@ -1,8 +1,13 @@
+# Node/React
 node_modules/
-.env
 dist/
+.env
+
+# Terraform 
 .terraform/
 *.tfstate
-terraform.tfvars
 *.tfstate.backup
-.terraform.lock.hcl
+.terraform.tfstate.lock.info
+
+# Lambda Zips
+*.zip

@@ -24,3 +24,24 @@ export const getTasks = async () => {
         return [];
     }
 };
+
+
+const deleteTask = async (taskId) => {
+  try {
+    // Axios DELETE requests need the body wrapped in a 'data' object
+    await axios.delete(API_URL, {
+      data: { 
+        userId: USER_ID, 
+        taskId: taskId 
+      }
+    });
+
+    // Update the UI state to remove the task locally
+    setTasks((prevTasks) => prevTasks.filter((t) => t.taskId !== taskId));
+    
+    console.log("Task deleted from AWS successfully");
+  } catch (error) {
+    console.error("Delete failed:", error.response?.data || error.message);
+    alert("Could not delete task. Check console for details.");
+  }
+};
